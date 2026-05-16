@@ -1,12 +1,11 @@
 // Import dependencies
 const express = require('express');
-const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ✅ Slack Event Verification Route
 app.post('/slack/events', (req, res) => {
@@ -29,12 +28,12 @@ app.post('/slack/commands', (req, res) => {
   }
 });
 
-// ✅ Root Route (optional)
+// ✅ Root Route
 app.get('/', (req, res) => {
-  res.send('⚡ BetOnJay Slack Bot is running!');
+  res.send('🚀 BetOnJay Slack Bot is running!');
 });
 
 // ✅ Start Server
 app.listen(port, () => {
-  console.log(`⚡ BetOnJay Slack bot running on port ${port}`);
+  console.log(`🚀 BetOnJay Slack bot running on port ${port}`);
 });
