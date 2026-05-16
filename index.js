@@ -1,24 +1,40 @@
-import express from "express";
-import bodyParser from "body-parser";
-import { WebClient } from "@slack/web-api";
-
+// Import dependencies
+const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Middleware
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const client = new WebClient(process.env.SLACK_BOT_TOKEN);
+// ✅ Slack Event Verification Route
+app.post('/slack/events', (req, res) => {
+  if (req.body.type === 'url_verification') {
+    return res.send({ challenge: req.body.challenge });
+  }
 
-app.post("/slack/commands", async (req, res) => {
-  const { channel_id, user_name } = req.body;
-
-  await client.chat.postMessage({
-    channel: channel_id,
-    text: `Hey ${user_name}, your BetOnJay bot is live!`
-  });
-
-  res.status(200).send();
+  console.log('Received event:', req.body);
+  res.sendStatus(200);
 });
+
+// ✅ Slack Command Route
+app.post('/slack/commands', (req, res) => {
+  const { command, text, user_name } = req.body;
+
+  if (command === '/betonjay') {
+    res.send(`Hey ${user_name}, your BetOnJay bot is live!`);
+  } else {
+    res.send('Unknown command.');
+  }
+});
+
+// ✅ Root Route (optional)
+app.get('/', (req, res) => {
+  res.send('⚡ BetOnJay Slack Bot is running!');
+});
+
+// ✅ Start Server
 app.listen(port, () => {
   console.log(`⚡ BetOnJay Slack bot running on port ${port}`);
 });
